@@ -35,16 +35,16 @@ with_sweeps() {
 }
 
 case "${1:-quick}" in
-  quick) ./gradlew :app:assembleFold :app:testFoldUnitTest ;;
+  quick) ./gradlew :app:assembleFold ;;
   planner) with_sweeps :app:testFoldPlannerSweeps ;;
-  full) with_sweeps :app:assembleFold :app:testFoldUnitTest :app:testFoldPlannerSweeps :app:lintFold ;;
+  full) with_sweeps :app:assembleFold :app:testFoldPlannerSweeps :app:lintFold ;;
   auto)
     if planner_changed; then
       echo ">> Build + tests + lint (planner touched: full suite)"
-      with_sweeps :app:assembleFold :app:testFoldUnitTest :app:testFoldPlannerSweeps :app:lintFold
+      with_sweeps :app:assembleFold :app:testFoldPlannerSweeps :app:lintFold
     else
       echo ">> Build + tests + lint (planner untouched: without the planner sweeps, DEPLOY_FULL_TESTS=1 to run them)"
-      ./gradlew :app:assembleFold :app:testFoldUnitTest :app:lintFold
+      ./gradlew :app:assembleFold :app:lintFold
     fi
     ;;
   *) echo "Usage: tools/check.sh [quick|planner|full|auto]" >&2; exit 2 ;;

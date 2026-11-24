@@ -1,8 +1,8 @@
 # Single source of truth for dependency versions (Renovate watches this file).
 # Upgrading a version is a change like any other: build, quick tests and lint before committing.
 [versions]
-agp = "8.11.1"
-kotlin = "2.1.21"
+agp = "9.5.2"
+kotlin = "2.2.10"
 ktlint-plugin = "14.2.0"
 ktlint-cli = "1.8.0"
 protobuf = "3.25.5"
