@@ -3,6 +3,7 @@ import java.nio.channels.FileChannel
 import java.nio.channels.FileLock
 import java.nio.channels.OverlappingFileLockException
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -63,7 +64,7 @@ android {
             matchingFallbacks += listOf("debug")
         }
     }
-    sourceSets.getByName("androidTest").assets.srcDir("src/test/resources")
+    sourceSets.getByName("androidTest").assets.directories.add("src/test/resources")
     // Compose screenshots on the JVM (Robolectric): visual check without a device.
     testOptions { unitTests.isIncludeAndroidResources = true }
     // Lint on the app sources only: the analysis of the unit test sources (lintAnalyzeFoldUnitTest, 1 min 14 s of
@@ -74,7 +75,7 @@ android {
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 }
 // Built-in Kotlin (AGP 9): the JVM target moves from android.kotlinOptions to the Kotlin extension.
-kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
+kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 // Published release (GitHub): its own permanent identifier, so it installs next to the development builds
 // (debug and fold: fr.luba.poc, debug key) without replacing them. Changing it, or losing the release key, would
 // force users to uninstall and lose their data. Code and resources keep the fr.luba.poc namespace.
@@ -114,9 +115,9 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
-    testImplementation(platform(libs.compose.bom))
-    testImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    //testImplementation(platform(libs.compose.bom))
+    //testImplementation(libs.androidx.compose.ui.test.junit4)
+    //debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
 // Planner sweeps on the reference map (every zone, angle or spacing): about 70 % of the test time. They never run in
@@ -139,7 +140,7 @@ val plannerSweeps = listOf("**/ReferenceMapPlannerTest*", "**/ReferenceMapPlanne
 abstract class TestSlots : BuildService<TestSlots.Params>, AutoCloseable {
     interface Params : BuildServiceParameters { val slots: Property<Int> }
     private var held: Pair<FileChannel, FileLock>? = null
-    @Synchronized fun acquire(log: org.gradle.api.logging.Logger) {
+    @Synchronized fun acquire(log: Logger) {
         if (held != null) return
         val dir = File("/tmp/dumbyluba-test-slots").apply { mkdirs() }
         var warned = false
@@ -162,7 +163,7 @@ val testSlots = gradle.sharedServices.registerIfAbsent("dumbylubaTestSlots", Tes
     val cpus = Runtime.getRuntime().availableProcessors()
     parameters.slots.set(providers.gradleProperty("testSlots").orNull?.toInt() ?: if (cpus >= 8) 2 else 1)
 }
-tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+tasks.withType<Test>().configureEach {
     // Local val: the doFirst action captures the provider itself, instead of re-reading a script property at
     // execution time (which the configuration cache cannot serialize).
     val slots = testSlots
@@ -227,7 +228,7 @@ afterEvaluate {
 
 // ART safeguard: a method with more than ~256 Dalvik registers (large Compose function) was
 // miscompiled by D8 in the non-debuggable variant, causing a VerifyError when opening the map.
-val checkFoldDexRegisters by tasks.registering(Exec::class) {
+val checkFoldDexRegisters = tasks.register<Exec>("checkFoldDexRegisters") {
     group = "verification"
     description = "Refuse l'APK fold si une méthode de l'app dépasse 224 registres Dalvik."
     val apk = layout.buildDirectory.file("outputs/apk/fold/app-fold.apk")
@@ -255,14 +256,15 @@ afterEvaluate {
 // JaCoCo agent at runtime (rather than AGP instrumentation) so Robolectric tests, whose sandbox reloads
 // classes, are counted too. Report: app/build.noindex/reports/jacoco/lubaCoverageReport/ (HTML and XML).
 if (providers.gradleProperty("lubaCoverage").isPresent) {
-    apply(plugin = "jacoco")
-    tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+    // Conditional plugin, so it cannot go in the plugins block.
+    pluginManager.apply("jacoco")
+    tasks.withType<Test>().configureEach {
         extensions.configure<JacocoTaskExtension> { isIncludeNoLocationClasses = true; excludes = listOf("jdk.internal.*") }
     }
     tasks.register<JacocoReport>("lubaCoverageReport") {
         group = "verification"
         description = "Rapport de couverture des tests JVM debug (Robolectric compris)."
-        val test = tasks.named<org.gradle.api.tasks.testing.Test>("testDebugUnitTest")
+        val test = tasks.named<Test>("testDebugUnitTest")
         executionData(test.map { it.extensions.getByType<JacocoTaskExtension>().destinationFile!! })
         classDirectories.setFrom(
             fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")),
