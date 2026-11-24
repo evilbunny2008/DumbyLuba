@@ -25,11 +25,11 @@ val releaseSigning = rootProject.file("keystore.properties").takeIf { it.isFile 
 }
 android {
     namespace = "fr.luba.poc"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "fr.luba.poc"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 189
         versionName = "1.19.0"
         testInstrumentationRunner = "fr.luba.poc.planning.PlannerDeviceBenchmark"

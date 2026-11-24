@@ -414,7 +414,7 @@ the published app, with their own data.
 #### Prerequisites
 
 - **JDK 17**;
-- **Android SDK 36** (Android Studio or command-line tools), set in `local.properties`
+- **Android SDK 37** (Android Studio or command-line tools), set in `local.properties`
   (`sdk.dir=/path/to/sdk`) or through the `ANDROID_HOME` variable;
 - `adb` to install on the phone (developer options and USB debugging enabled).
 

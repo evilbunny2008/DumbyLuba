@@ -612,6 +612,8 @@ class RobotBle(app: Application) : AndroidViewModel(app) {
         try {
             if (adapter?.isEnabled != true) { stopScan(); status(tr("Turn on Android Bluetooth", "Activez le Bluetooth Android")); return }
             stopScan()
+            // Nullable since SDK 37: null when Bluetooth is turning off between the check above and here.
+            val scanner = adapter.bluetoothLeScanner ?: run { status(tr("Turn on Android Bluetooth", "Activez le Bluetooth Android")); return }
             scanAddresses.clear()
             val paired = adapter.bondedDevices.mapNotNull { device ->
                 val name = device.name ?: return@mapNotNull null
@@ -620,7 +622,7 @@ class RobotBle(app: Application) : AndroidViewModel(app) {
             }
             update { it.copy(scanning = true, devices = if (gatewayPhone) emptyList() else paired,
                 status = if (gatewayPhone) tr("Gateway: Bluetooth search for the robot (range check)…", "Passerelle : recherche Bluetooth du robot (vérification de portée)…") else tr("BLE search; ${paired.size} paired LUBA available", "Recherche BLE ; ${paired.size} LUBA appairé(s) disponible(s)")) }
-            adapter.bluetoothLeScanner.startScan(null, ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), scannerCallback)
+            scanner.startScan(null, ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), scannerCallback)
             event("scan", tr("BLE detection for 15 seconds", "Détection BLE pendant 15 secondes"), mapOf("autoConnect" to connectAuto, "gatewayPhone" to gatewayPhone))
             autoConnectPending = connectAuto
             if (connectAuto) autoConnectCheck = viewModelScope.launch { delay(AUTO_CONNECT_SETTLE_MS); resolveAutoConnect(final = false) }
