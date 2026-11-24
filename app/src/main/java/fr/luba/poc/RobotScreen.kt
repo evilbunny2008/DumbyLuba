@@ -11,7 +11,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -139,6 +150,8 @@ internal fun RobotScreen(
     val stopAvailable = (stopLive || stopGrace) && !mapIdle
     Scaffold(
         containerColor = MammotionColors.Background,
+        // Camera cutout included: in landscape the pages no longer slide under the notch.
+        contentWindowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout),
         bottomBar = {
             RobotBottomBar(shell, nav, stopAvailable = stopAvailable, tabBar = !nav.pushed(localOnly),
                 updateAvailable = update.available != null, onStop = robot::stop)
@@ -147,8 +160,11 @@ internal fun RobotScreen(
         // The home screen extends under the status bar (robot showcase); the other screens keep the margin.
         val direction = LocalLayoutDirection.current
         val homeEdge = nav.tab == Tab.Appareil && nav.page == DevicePage.HOME
-        Box(Modifier.fillMaxSize().padding(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction),
-            top = if (homeEdge) 0.dp else padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())) {
+        val content = PaddingValues(start = padding.calculateStartPadding(direction), end = padding.calculateEndPadding(direction),
+            top = if (homeEdge) 0.dp else padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())
+        // The margins applied here are consumed so that a page's own inset padding is not added twice, and the
+        // keyboard (edge-to-edge: adjustResize no longer applies) lifts the page by what exceeds the bottom bar.
+        Box(Modifier.fillMaxSize().padding(content).consumeWindowInsets(content).imePadding()) {
             RobotPages(robot, nav, simulation, cloud, cloudState, localOnly, isGateway = role == GatewayRole.GATEWAY,
                 alerts = alerts, onShowAlerts = { showAlerts = true }, me = MeTabSettings(themeMode, onThemeModeChange, onLanguageChange, update))
         }
@@ -253,7 +269,11 @@ private fun RobotBottomBar(shell: RobotShellUi, nav: AppNavigation, stopAvailabl
     Column {
         if (stopAvailable) HorizontalDivider(color = MammotionColors.Hairline)
         if (stopAvailable) Surface(color = MammotionColors.Surface) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+            // Without the tab bar (pushed page), the STOP bar is the lowest element: it keeps clear of the gesture bar.
+            // Sides: navigation bar and cutout in landscape, as NavigationBar does.
+            val sides = if (tabBar) WindowInsetsSides.Horizontal else WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+            Row(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.displayCutout).only(sides))
+                .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(activityLabel(shell), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall,
                     color = MammotionColors.TextSecondary)

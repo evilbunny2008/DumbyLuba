@@ -211,8 +211,8 @@ tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
 // variant's unit tests, run after them so that the two process pools never load the cores at the same time.
 afterEvaluate {
     for (variant in listOf("Debug", "Fold", "Release")) {
-        val unitTests = tasks.named<org.gradle.api.tasks.testing.Test>("test${variant}UnitTest")
-        tasks.register<org.gradle.api.tasks.testing.Test>("test${variant}PlannerSweeps") {
+        val unitTests = tasks.named<Test>("test${variant}UnitTest")
+        tasks.register<Test>("test${variant}PlannerSweeps") {
             group = "verification"
             description = "Planner sweeps on the reference map (${variant.lowercase()} variant)."
             val base = unitTests.get()
