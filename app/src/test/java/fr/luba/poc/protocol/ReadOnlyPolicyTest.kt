@@ -142,17 +142,21 @@ class ReadOnlyPolicyTest {
         assertTrue(ModelSupport.motionValidated("luba-vp3K8A2B"))
         assertNull(ModelSupport.refusal("Luba-VPDEMO01"))
         assertNull(ModelSupport.readOnlyNote("Luba-VPDEMO01", "LUBA 2 AWD"))
-        listOf("Luba-VADEMO01", "Luba-MNDEMO01", "Luba-LADEMO01", "LubaDEMO01", "Yuka-MNDEMO01",
+        // Yuka mini unlocked locally by its owner.
+        assertTrue(ModelSupport.motionValidated("Yuka-MNDEMO01"))
+        assertNull(ModelSupport.refusal("Yuka-MNDEMO01"))
+        listOf("Luba-VADEMO01", "Luba-MNDEMO01", "Luba-LADEMO01", "LubaDEMO01", "Yuka-YMDEMO01", "Yuka-DEMO01",
             "Ezy-VTDEMO01", "Spino-S1DEMO", null, "").forEach { assertFalse("$it", ModelSupport.motionValidated(it)) }
         assertNull(ModelSupport.refusal("Luba-VSDEMO01"))
-        assertTrue(ModelSupport.refusal("Yuka-MNDEMO01")!!.isNotBlank())
+        assertTrue(ModelSupport.refusal("Yuka-YMDEMO01")!!.isNotBlank())
     }
 
     @Test fun readOnlyNoteOnlyForAKnownRobotThatIsNotValidated() {
         assertNull(ModelSupport.readOnlyNote("Luba-VSDEMO01", "LUBA 2 AWD"))
         assertNull(ModelSupport.readOnlyNote(null, "LUBA"))
         assertNull(ModelSupport.readOnlyNote(" ", "LUBA"))
-        val note = ModelSupport.readOnlyNote("Yuka-MNDEMO01", "Yuka")!!
+        assertNull(ModelSupport.readOnlyNote("Yuka-MNDEMO01", "Yuka"))
+        val note = ModelSupport.readOnlyNote("Yuka-YMDEMO01", "Yuka")!!
         assertTrue(note.contains("Yuka") && note.contains(ModelSupport.SUPPORT_PAGE))
     }
 
@@ -160,6 +164,6 @@ class ReadOnlyPolicyTest {
         listOf("Luba-VSDEMO01", "LubaDEMO01", "Luba-VADEMO01", "Yuka-DEMO01", "Yuka-MNDEMO01", "Ezy-LDDEMO01",
             "Kumar-MKDEMO01", "Maston-RDEMO01").forEach { assertTrue("$it", ModelSupport.isMower(it)) }
         listOf("Spino-S1DEMO", "RBSA1DEMO", "NBDEMO", "Phone", null).forEach { assertFalse("$it", ModelSupport.isMower(it)) }
-        assertEquals(listOf("Luba-VS", "Luba-VP"), ModelSupport.VALIDATED_PREFIXES)
+        assertEquals(listOf("Luba-VS", "Luba-VP", "Yuka-MN"), ModelSupport.VALIDATED_PREFIXES)
     }
 }

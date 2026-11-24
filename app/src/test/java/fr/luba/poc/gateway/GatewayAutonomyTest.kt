@@ -237,7 +237,7 @@ class GatewayAutonomyTest {
     }
 
     @Test(timeout = 120_000) fun aRobotModelInReadOnlyModeNeverGetsAnAutonomousLeg() = runBlocking {
-        serve(); val pilot = Pilot(robotName = "Yuka-MNDEMO01"); val link = links.take()
+        serve(); val pilot = Pilot(robotName = "Yuka-YMDEMO01"); val link = links.take()
         val route = pilot.client.ensureRoute(path()); val guard = pilot.client.ensureGuard(wideSurface())
         val leg = pilot.client.start(spec(pilot, route, guard, cutting = true), Recorder())
         val failure = runCatching { withTimeout(30_000) { leg.result.await() } }.exceptionOrNull()

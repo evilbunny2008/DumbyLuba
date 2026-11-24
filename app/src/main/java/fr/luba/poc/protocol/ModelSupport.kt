@@ -25,8 +25,11 @@ import kotlinx.coroutines.flow.asStateFlow
  * Mammotion app table (PyMammotion `DeviceType`); pool cleaners (Spino) and RTK stations are not mowers.
  */
 object ModelSupport {
-    /** Bluetooth name prefixes of the models validated on a real robot (motion and blades allowed). */
-    val VALIDATED_PREFIXES = listOf("Luba-VS", "Luba-VP")
+    /**
+     * Bluetooth name prefixes of the models allowed full control (motion, blades, mowing). `Yuka-MN` (Yuka mini) is
+     * unlocked locally by its owner, without the model trial: it has no blade-height setting nor blade speed control.
+     */
+    val VALIDATED_PREFIXES = listOf("Luba-VS", "Luba-VP", "Yuka-MN")
 
     /** Bluetooth name prefixes of Mammotion mowers listed by the scan. */
     val MOWER_PREFIXES = listOf("Luba", "Yuka", "Ezy-", "Kumar", "Maston")

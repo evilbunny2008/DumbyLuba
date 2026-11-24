@@ -6,7 +6,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    //alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.ktlint)
@@ -72,8 +72,9 @@ android {
     // (tools:ignore, @SuppressLint) or in app/lint.xml.
     lint { ignoreTestSources = true; warningsAsErrors = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
-    kotlinOptions { jvmTarget = "17" }
 }
+// Built-in Kotlin (AGP 9): the JVM target moves from android.kotlinOptions to the Kotlin extension.
+kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 // Published release (GitHub): its own permanent identifier, so it installs next to the development builds
 // (debug and fold: fr.luba.poc, debug key) without replacing them. Changing it, or losing the release key, would
 // force users to uninstall and lose their data. Code and resources keep the fr.luba.poc namespace.
@@ -130,8 +131,7 @@ val plannerSweeps = listOf("**/ReferenceMapPlannerTest*", "**/ReferenceMapPlanne
     "**/StartTransitTest*", "**/TurnStyleReferenceTest*", "**/OuterOffsetCoverageTest*",
     "**/FastPipelineTest*", "**/OptimizedModeTest*", "**/DockObstaclePreviewTest*", "**/ZamboniDeadEndTest*", "**/SpiralCentreResumeTest*",
     "**/ObstacleBypassTest*", "**/BorderMarginChassisTest*", "**/ReturnReserveTest*", "**/SmartResumeReferenceTest*", "**/BorderClearanceTest*",
-    "**/ZoneExit20261014Test*", "**/ZamboniExecutionTest*", "**/EdgeContactSimulationTest*", "**/NoGoPivotMarginTest*", "**/OuterOffsetTest*",
-    "**/RollingTurnExecutionTest*")
+    "**/ZoneExit20261014Test*", "**/ZamboniExecutionTest*", "**/EdgeContactSimulationTest*", "**/NoGoPivotMarginTest*", "**/OuterOffsetTest*")
 // Test slots shared by every worktree of the machine: sessions that ran their full suite at the same time loaded
 // 10 cores up to 43 and made each run two to four times slower (30 to 60 minutes instead of about 19). A test task waits for a
 // free slot (lock files in /tmp/dumbyluba-test-slots, released at the end of the build, or by the system if Gradle
