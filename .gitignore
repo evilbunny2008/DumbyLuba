@@ -25,3 +25,5 @@ keystore.properties
 
 # Local audit reports: kept on disk, never versioned
 docs/interne/ANALYSE_REPO_*.md
+
+app/release/
