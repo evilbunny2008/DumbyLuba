@@ -303,9 +303,12 @@ fun PushedPage(
     bottomBar: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    // Insets not already consumed by the shell (full-screen dialog, page without the tab bar): header below the
+    // status bar, last content or bottom bar above the navigation bar, sides clear of the cutout in landscape.
+    val insets = WindowInsets.safeDrawing
     Surface(modifier.fillMaxSize(), color = background) {
-        Column(Modifier.fillMaxSize()) {
-            Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.fillMaxSize().windowInsetsPadding(insets.only(WindowInsetsSides.Horizontal))) {
+            Row(Modifier.fillMaxWidth().windowInsetsPadding(insets.only(WindowInsetsSides.Top)).heightIn(min = 56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = tr("Back", "Retour")) }
                 Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 actions()
@@ -314,9 +317,11 @@ fun PushedPage(
                 verticalArrangement = Arrangement.spacedBy(Dimens.Md)) {
                 content()
                 Spacer(Modifier.height(Dimens.Lg))
+                if (bottomBar == null) Spacer(Modifier.windowInsetsBottomHeight(insets))
             }
             if (bottomBar != null) Surface(color = MammotionColors.Surface, shadowElevation = 8.dp) {
-                Column(Modifier.fillMaxWidth().padding(horizontal = Dimens.Lg, vertical = Dimens.Md),
+                Column(Modifier.fillMaxWidth().windowInsetsPadding(insets.only(WindowInsetsSides.Bottom))
+                    .padding(horizontal = Dimens.Lg, vertical = Dimens.Md),
                     verticalArrangement = Arrangement.spacedBy(Dimens.Sm), content = bottomBar)
             }
         }

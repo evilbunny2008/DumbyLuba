@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -280,6 +282,9 @@ private fun RobotBottomBar(shell: RobotShellUi, nav: AppNavigation, stopAvailabl
                 StopAction(onStop)
             }
         }
+        // Neither STOP nor tab bar: an empty bottom bar would count as 0 dp in the Scaffold, which then leaves the
+        // navigation bar out of the content padding and puts the pages' bottom buttons under it.
+        if (!stopAvailable && !tabBar) Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         if (tabBar) HorizontalDivider(color = MammotionColors.Hairline)
         if (tabBar) NavigationBar(containerColor = MammotionColors.Surface, tonalElevation = 0.dp) {
             Tab.entries.forEach { entry ->
