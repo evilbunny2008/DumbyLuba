@@ -128,18 +128,6 @@ fun CameraPage(robot: RobotBle, state: RobotUi, cloud: CloudViewModel, cloudStat
             Text(tr("The Mammotion app only requests the front camera. Choosing \"Right\" requests both cameras (stream restarted if needed).", "L'app Mammotion ne demande que la caméra avant. Choisir « Droite » demande les deux caméras (flux relancé si besoin)."),
                 style = MaterialTheme.typography.bodySmall, color = MammotionColors.TextSecondary)
         }
-        SettingsGroup(title = tr("Headlamp", "Phare")) {
-            // State read on opening; the switch answer (set_lamp_rsp) and the read (get_lamp_rsp) update it.
-            LaunchedEffect(viaRobot) { if (viaRobot) robot.headlampRead() }
-            KeyValueRow(tr("State", "État"), state.camera.headlampLabel)
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Sm)) {
-                SecondaryPillButton(tr("Light on", "Allumer"), { robot.headlamp(true) }, Modifier.weight(1f), enabled = viaRobot)
-                SecondaryPillButton(tr("Light off", "Éteindre"), { robot.headlamp(false) }, Modifier.weight(1f), enabled = viaRobot)
-            }
-            Text(tr("Robot link only (Bluetooth / gateway). Models with a headlamp (Yuka Mini, LUBA 2…). Untested: check the light and the state above.",
-                "Liaison robot uniquement (Bluetooth / passerelle). Modèles avec phare (Yuka Mini, LUBA 2…). Non testé : vérifier le phare et l'état ci-dessus."),
-                style = MaterialTheme.typography.bodySmall, color = MammotionColors.TextSecondary)
-        }
         SettingsGroup(title = tr("Obstacle photo after a contact", "Photo de l'obstacle après un contact")) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(tr("Photograph the obstacle after the back-off", "Photographier l'obstacle après le recul"), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))

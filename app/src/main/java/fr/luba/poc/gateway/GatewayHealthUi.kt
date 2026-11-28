@@ -23,7 +23,7 @@ import androidx.compose.material.icons.rounded.Battery4Bar
 import androidx.compose.material.icons.rounded.Battery6Bar
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.BatteryUnknown
+import androidx.compose.material.icons.automirrored.rounded.BatteryUnknown
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Thermostat
@@ -206,7 +206,7 @@ fun SignalBars(bars: Int, color: Color, modifier: Modifier = Modifier) {
 }
 
 private fun batteryIcon(h: GatewayHealth): ImageVector = when {
-    h.batteryPercent < 0 -> Icons.Rounded.BatteryUnknown
+    h.batteryPercent < 0 -> Icons.AutoMirrored.Rounded.BatteryUnknown
     h.charging -> Icons.Rounded.BatteryChargingFull
     h.batteryPercent >= 90 -> Icons.Rounded.BatteryFull
     h.batteryPercent >= 60 -> Icons.Rounded.Battery6Bar

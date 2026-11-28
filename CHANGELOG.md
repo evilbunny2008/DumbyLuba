@@ -1707,3 +1707,9 @@ gateway), for the models with a headlamp (Yuka Mini request). Commands of PyMamm
 answers (`set_lamp_rsp`, `get_lamp_rsp`) and the raw `headlamp_status` of the device report. The read-only policy
 accepts only this manual switch (no automatic night mode, no brightness); like the camera commands, these writes do not
 stop a mission through the gateway. Untested on a robot. Tests: `HeadlampTest`.
+
+Version 1.20.1 (192): **Build warning removed, headlamp easier to find**. The headlamp switch moves from the bottom of
+the Camera page to its own entry, Service → Robot → **Headlamp**, which stays available in local mode (the Camera page
+is hidden there since the video needs the Mammotion account). The gateway battery "unknown" icon uses the auto-mirrored
+`Icons.AutoMirrored.Rounded.BatteryUnknown` instead of the deprecated `Icons.Rounded.BatteryUnknown` (same icon,
+mirrored in right-to-left languages).
