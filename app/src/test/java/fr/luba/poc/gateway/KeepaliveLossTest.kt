@@ -17,6 +17,16 @@ class KeepaliveLossTest {
         assertFalse(KeepaliveLoss.keepalive(false, "ROUTE_DOCK_ZERO"))
     }
 
+    @Test fun cameraCommandsDoNotStopAMissionThroughTheGateway() {
+        // CAMERA_VIDEO_ON sent as the mowing started through the gateway: Wi-Fi round trip > 1.5 s, mowing stopped at 0 %.
+        for (label in listOf("CAMERA_VIDEO_ON", "CAMERA_VIDEO_OFF", "CAMERA_REFRESH_FPV")) {
+            assertTrue(label, KeepaliveLoss.keepalive(false, label))
+            assertEquals(label, KeepaliveLoss.GATEWAY_KEEPALIVE_MS, KeepaliveLoss.timeoutMs(viaGateway = true, keepalive = true, operatorDriving = false, missionRunning = true))
+        }
+        // Blade and motion writes stay strict.
+        assertFalse(KeepaliveLoss.keepalive(false, "DrvMowCtrlByHand"))
+    }
+
     @Test fun waitsDuringTheOutageAndShortlyAfterTheResume() {
         assertTrue(KeepaliveLoss.waiting(true, started = 1000, now = 9000, outageSince = 2000, resumedAt = 0))
         assertTrue(KeepaliveLoss.waiting(true, started = 1000, now = 9500, outageSince = 0, resumedAt = 8000))

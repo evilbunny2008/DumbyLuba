@@ -1689,3 +1689,12 @@ continuous after a stop). Acute corners slanted more than about 40° still pivot
 (`tools/planner-sweeps.sh`, version number left out), so the publication no longer runs them a second time on the same
 sources; the publication runs its tests on 2 processes instead of 4 and reuses the gateway firmware files of the
 previous release when the firmware did not change.
+
+Version 1.19.1 (190): **Camera commands no longer stop the mowing through the gateway**.
+
+**Camera commands through the gateway**: starting the mowing with the camera page
+or its thumbnail open sent `CAMERA_VIDEO_ON` (`vi_switch=1`) through the gateway; its Wi-Fi round trip exceeded the 1.5 s
+kept for setpoints, STOP and blades, and the mowing stopped at 0 % with "FAILED — GATT timeout (CAMERA_VIDEO_ON without
+confirmation in 1.5 s), STOP possibly unavailable". Camera commands (`vi_switch`, `refresh_fpv`) move nothing: they now
+get the 5 s of the link keep-alives through the gateway and are dropped if lost in a Wi-Fi outage. A direct Bluetooth
+link keeps the strict 1.5 s. Test: `KeepaliveLossTest`.
