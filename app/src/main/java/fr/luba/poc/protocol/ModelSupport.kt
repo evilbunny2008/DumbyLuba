@@ -196,7 +196,10 @@ object ReadOnlyPolicy {
                 }
             }
             LubaMsg.LubaSubMsgCase.MUL -> when (message.mul.subMulCase) {
-                SocMul.SubMulCase.SET_VIDEO, SocMul.SubMulCase.REQ_ENCODE -> true
+                SocMul.SubMulCase.SET_VIDEO, SocMul.SubMulCase.REQ_ENCODE, SocMul.SubMulCase.GET_LAMP -> true
+                // Headlamp: manual on/off only (no automatic night mode, no brightness).
+                SocMul.SubMulCase.SET_LAMP -> message.mul.setLamp.let { it.lampPowerCtrl == 2 && !it.ctrlLampBright &&
+                    it.setIds in setOf(Commands.HEADLAMP_ON_IDS, Commands.HEADLAMP_OFF_IDS) }
                 else -> false
             }
             else -> false

@@ -1698,3 +1698,12 @@ kept for setpoints, STOP and blades, and the mowing stopped at 0 % with "FAILED 
 confirmation in 1.5 s), STOP possibly unavailable". Camera commands (`vi_switch`, `refresh_fpv`) move nothing: they now
 get the 5 s of the link keep-alives through the gateway and are dropped if lost in a Wi-Fi outage. A direct Bluetooth
 link keeps the strict 1.5 s. Test: `KeepaliveLossTest`.
+
+Version 1.20.0 (191): **Headlamp switch**.
+
+**Headlamp switch**: Camera page → Headlamp: "Light on" / "Light off" through the robot link (Bluetooth or
+gateway), for the models with a headlamp (Yuka Mini request). Commands of PyMammotion `set_car_manual_light`
+(`SetHeadlamp`, ids 1125 on / 1127 off, `lamp_power_ctrl` 2) and `get_car_light(1126)`; the page shows the robot's
+answers (`set_lamp_rsp`, `get_lamp_rsp`) and the raw `headlamp_status` of the device report. The read-only policy
+accepts only this manual switch (no automatic night mode, no brightness); like the camera commands, these writes do not
+stop a mission through the gateway. Untested on a robot. Tests: `HeadlampTest`.

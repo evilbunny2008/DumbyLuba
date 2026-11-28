@@ -14,12 +14,12 @@ object KeepaliveLoss {
      */
     val LABELS = setOf("sync(2)", "RPT_KEEP", "RPT_START", "ROUTE_REPORTS")
     /**
-     * Camera commands of the multimedia module (`vi_switch`, `refresh_fpv`): no motion, no blades, so not a safety
+     * Commands of the multimedia module (camera `vi_switch`, `refresh_fpv`, headlamp): no motion, no blades, so not a safety
      * write. Through the gateway, `CAMERA_VIDEO_ON` sent as the mowing started (camera page or thumbnail open) waited
      * for the Wi-Fi round trip, got the 1.5 s of a setpoint and stopped the mowing at 0 % ("CAMERA_VIDEO_ON without
      * confirmation in 1.5 s"). Treated like a keepalive: Wi-Fi delay tolerated, dropped if lost in an outage.
      */
-    val CAMERA_LABELS = setOf("CAMERA_VIDEO_ON", "CAMERA_VIDEO_OFF", "CAMERA_REFRESH_FPV")
+    val MEDIA_LABELS = setOf("CAMERA_VIDEO_ON", "CAMERA_VIDEO_OFF", "CAMERA_REFRESH_FPV", "HEADLAMP_ON", "HEADLAMP_OFF", "HEADLAMP_READ")
     /** Time allowed for the confirmation after the reconnection (frame resent by the pilot on resume). */
     const val AFTER_RESUME_MS = 3000L
     /** Strict operation timeout: bound on the delay of a setpoint or of the STOP when this phone drives the motion. */
@@ -33,7 +33,7 @@ object KeepaliveLoss {
      */
     const val GATEWAY_KEEPALIVE_MS = 5000L
 
-    fun keepalive(rssi: Boolean, label: String?): Boolean = rssi || label in LABELS || label in CAMERA_LABELS
+    fun keepalive(rssi: Boolean, label: String?): Boolean = rssi || label in LABELS || label in MEDIA_LABELS
 
     /**
      * GATT operation timeout before a failure. Direct link or activity driven from the screen (joystick, tests): strict

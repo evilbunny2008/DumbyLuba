@@ -508,6 +508,8 @@ class RobotBle(app: Application) : AndroidViewModel(app) {
     fun sendCameraCommand(payload: ByteArray, label: String): Boolean = sensorProbes.sendCameraCommand(payload, label)
     fun cameraVideo(on: Boolean): Boolean = sensorProbes.cameraVideo(on)
     fun cameraRefresh(): Boolean = sensorProbes.cameraRefresh()
+    fun headlamp(on: Boolean): Boolean = sensorProbes.headlamp(on)
+    fun headlampRead(): Boolean = sensorProbes.headlampRead()
     fun cameraEvent(text: String, fields: Map<String, Any?> = emptyMap()) = sensorProbes.cameraEvent(text, fields)
     fun resetSensorProbe() = sensorProbes.resetSensorProbe()
     /** Current telemetry subscription: vision streams added while the sensor probe is running. */
@@ -1090,6 +1092,9 @@ class RobotBle(app: Application) : AndroidViewModel(app) {
     private fun onPerception(message: LubaMsg) {
         if (cameraObserver.accept(message, Clock.now())) {
             val camera = cameraObserver.value
+            if (message.hasMul() && (message.mul.hasSetLampRsp() || message.mul.hasGetLampRsp()))
+                event("headlamp", tr("Headlamp: ${camera.headlampLabel}", "Phare : ${camera.headlampLabel}"),
+                    mapOf("on" to camera.headlampOn, "result" to camera.headlampResult, "reportStatus" to camera.headlampStatus))
             if (message.hasMul() && message.mul.hasSetVideoAck()) event("camera", tr("Camera: vi_switch ${CameraRobotState.ackLabel(camera.lastAck)}", "Caméra : vi_switch ${CameraRobotState.ackLabel(camera.lastAck)}"), mapOf("code" to camera.lastAck))
             update { it.copy(camera = camera) }
         }

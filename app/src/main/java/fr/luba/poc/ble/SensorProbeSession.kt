@@ -215,6 +215,12 @@ internal class SensorProbeSession(private val host: RobotBle) {
         if (it) event("camera", if (on) tr("Camera: publishing requested (vi_switch=1)", "Caméra : publication demandée (vi_switch=1)") else tr("Camera: stop requested (vi_switch=0)", "Caméra : arrêt demandé (vi_switch=0)"))
     }
     fun cameraRefresh(): Boolean = sendCameraCommand(commands.refreshFpv(), "CAMERA_REFRESH_FPV")
+    /** Headlamp on/off through the robot link, then a state read so the page shows the robot's answer. */
+    fun headlamp(on: Boolean): Boolean = sendCameraCommand(commands.headlamp(on), if (on) "HEADLAMP_ON" else "HEADLAMP_OFF").also {
+        if (it) { event("headlamp", if (on) tr("Headlamp: on requested", "Phare : allumage demandé") else tr("Headlamp: off requested", "Phare : extinction demandée"))
+            sendCameraCommand(commands.headlampRead(), "HEADLAMP_READ") }
+    }
+    fun headlampRead(): Boolean = sendCameraCommand(commands.headlampRead(), "HEADLAMP_READ")
     fun cameraEvent(text: String, fields: Map<String, Any?> = emptyMap()) = event("camera", text, fields)
     fun resetSensorProbe() { sensorProbe.reset(); update { it.copy(sensorProbe = sensorProbe.snapshot()) } }
 }

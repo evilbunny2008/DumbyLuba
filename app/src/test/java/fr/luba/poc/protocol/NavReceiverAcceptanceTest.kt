@@ -51,6 +51,7 @@ class NavReceiverAcceptanceTest {
         add("reports" to c.reports(false, now)); add("reportsKeep" to c.reports(true, now, periodMs = 200))
         add("reportsAccount" to c.reports(false, now, account = true)); add("reportsVision" to c.reports(false, now, vision = true))
         add("video" to c.video(true, now = now)); add("videoOff" to c.video(false, now = now)); add("refreshFpv" to c.refreshFpv(now))
+        add("headlamp" to c.headlamp(true, now)); add("headlampOff" to c.headlamp(false, now)); add("headlampRead" to c.headlampRead(now))
         add("debugEnable" to c.debugEnable(true, now)); add("productModel" to c.productModel(now)); add("networkInfo" to c.networkInfo(now))
         add("perceptionZmq" to c.perceptionZmq(true, now))
     }

@@ -46,6 +46,10 @@ class Commands(private val userAccount: Int = 0, val navReceiver: MsgDevice = Ms
         /** Joystick: 100 % = actual ceiling of the official rocker (≈ 1 m/s, ≈ 45 °/s). */
         const val JOYSTICK_MAX_LINEAR = PROTOCOL_MAX_LINEAR
         const val JOYSTICK_MAX_ANGULAR = PROTOCOL_MAX_ANGULAR
+        /** Headlamp parameter ids of the Mammotion app (PyMammotion `media.py`). */
+        const val HEADLAMP_ON_IDS = 1125
+        const val HEADLAMP_OFF_IDS = 1127
+        const val HEADLAMP_READ_IDS = 1126
     }
     private var sequence = 0
     private fun envelope(type: MsgCmdType, receiver: MsgDevice, now: Long): LubaMsg.Builder {
@@ -229,6 +233,23 @@ class Commands(private val userAccount: Int = 0, val navReceiver: MsgDevice = Ms
     fun video(on: Boolean, position: MUL_CAMERA_POSITION = MUL_CAMERA_POSITION.LEFT, now: Long = Clock.now()): ByteArray =
         envelope(MsgCmdType.MSG_CMD_TYPE_MUL, MsgDevice.SOC_MODULE_MULTIMEDIA, now)
             .setMul(SocMul.newBuilder().setSetVideo(MulSetVideo.newBuilder().setPosition(position).setViSwitch(if (on) 1 else 0)))
+            .build().toByteArray()
+
+    /**
+     * Headlamp, manual switch (PyMammotion `set_car_manual_light`): `set_ids` 1125 on / 1127 off, `lamp_power_ctrl` 2.
+     * Multimedia module, like the camera: no movement or blade command. Untested on a robot (2026-11-28).
+     */
+    fun headlamp(on: Boolean, now: Long = Clock.now()): ByteArray =
+        envelope(MsgCmdType.MSG_CMD_TYPE_MUL, MsgDevice.SOC_MODULE_MULTIMEDIA, now)
+            .setMul(SocMul.newBuilder().setSetLamp(SetHeadlamp.newBuilder()
+                .setSetIds(if (on) HEADLAMP_ON_IDS else HEADLAMP_OFF_IDS).setLampPowerCtrl(2)
+                .setLampManualCtrl(if (on) lamp_manual_ctrl_sta.manual_power_on else lamp_manual_ctrl_sta.manual_power_off)))
+            .build().toByteArray()
+
+    /** Headlamp manual state read (PyMammotion `get_car_light(1126)`): answered by `get_lamp_rsp`. */
+    fun headlampRead(now: Long = Clock.now()): ByteArray =
+        envelope(MsgCmdType.MSG_CMD_TYPE_MUL, MsgDevice.SOC_MODULE_MULTIMEDIA, now)
+            .setMul(SocMul.newBuilder().setGetLamp(GetHeadlamp.newBuilder().setGetIds(HEADLAMP_READ_IDS)))
             .build().toByteArray()
 
     /** Video encoder restart (PyMammotion `refresh_fpv`), every 3 s when the robot streams over 4G. */
