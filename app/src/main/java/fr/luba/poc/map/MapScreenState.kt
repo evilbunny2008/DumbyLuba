@@ -357,4 +357,6 @@ internal class MapScreenArgs(
     val onSaveCorrections: (List<MapCorrection>) -> Boolean,
     /** Opened from the first-launch assistant ("Explore without a robot"): the demo map is shown at once. */
     val startDemo: Boolean,
+    /** Headlamp switch of the side bar (true = on). */
+    val onHeadlamp: (Boolean) -> Unit,
 )

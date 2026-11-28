@@ -37,7 +37,6 @@ import fr.luba.poc.ble.ConnectionState
 import fr.luba.poc.ble.RobotBle
 import fr.luba.poc.ble.RobotUi
 import fr.luba.poc.camera.CameraPage
-import fr.luba.poc.camera.HeadlampPage
 import fr.luba.poc.gateway.GatewayConfig
 import fr.luba.poc.gateway.GatewayHealthStrip
 import fr.luba.poc.gateway.GatewayPanel
@@ -86,7 +85,6 @@ enum class ServicePage(val key: String, private val titleEn: String, private val
     DRIVEN_RECORD("EnregistrementPilote", "Record by driving", "Enregistrer en pilotant", parent = "Pilotage"),
     HEIGHT("Hauteur", "Cutting height", "Hauteur de coupe"),
     CAMERA("Camera", "Camera", "Caméra"),
-    HEADLAMP("Phare", "Headlamp", "Phare"),
     MAINTENANCE("Entretien", "Maintenance", "Entretien"),
     // Garden and history
     HISTORY("Historique", "Task history", "Historique des tâches"),
@@ -198,7 +196,6 @@ fun RobotPanel(
         ServicePage.CAMERA -> if (AccountMode.observe()) PushedPage(page.title, back, modifier) { InfoNote(AccountMode.message) }
             else if (cloud != null) CameraPage(robot, state, cloud, cloudState, back)
             else PushedPage(page.title, back, modifier) { InfoNote(tr("Mammotion account unavailable on this screen.", "Compte Mammotion indisponible sur cet écran.")) }
-        ServicePage.HEADLAMP -> HeadlampPage(robot, state, back, modifier)
         ServicePage.MAINTENANCE -> MaintenancePage(state, back, modifier)
         ServicePage.HISTORY -> MowingHistoryPage(state.mowingHistory, state.mowingRecord, state.selected?.address,
             back, onOpen = { robot.showTaskDetail(it) }, modifier = modifier, loadTrack = robot::loadTaskTrack)
@@ -414,9 +411,6 @@ private fun ServiceHub(robot: RobotBle, state: RobotUi, modifier: Modifier, open
                 value = state.telemetry.bladeHeightMm?.let { "$it mm" })
             // Video only goes through the Mammotion cloud: no entry in local mode.
             if (!AccountMode.observe()) Entry(ServicePage.CAMERA, Icons.Rounded.Videocam, tr("Live video through the Mammotion account", "Vidéo en direct par le compte Mammotion"))
-            // Robot link only: kept in local mode.
-            Entry(ServicePage.HEADLAMP, Icons.Rounded.FlashlightOn, tr("Headlamp on / off", "Allumer / éteindre le phare"), enabled = ready,
-                value = state.camera.headlampOn?.let { if (it) tr("on", "allumé") else tr("off", "éteint") })
             Entry(ServicePage.MAINTENANCE, Icons.Rounded.Build, tr("Blade wear, mileage, battery cycles", "Usure des lames, kilométrage, cycles batterie"))
         }
         SettingsGroup(title = tr("Garden and history", "Jardin et historique")) {

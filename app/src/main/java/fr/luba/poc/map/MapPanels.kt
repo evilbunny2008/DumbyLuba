@@ -100,6 +100,7 @@ internal fun MapSideBar(
     camera: () -> MapCamera, onCamera: (MapCamera) -> Unit, follow: RobotFollow, scope: CoroutineScope,
     sheets: MapSheets, layers: MapLayersState, actions: MapActionState, pointMove: PointMoveState, pointTarget: PointTarget,
     stationEnabled: Boolean, followEnabled: Boolean, moveEnabled: Boolean, layersEnabled: Boolean, layersShown: Boolean,
+    headlampOn: Boolean? = null, headlampEnabled: Boolean = false, onHeadlamp: (Boolean) -> Unit = {},
 ) {
     val colors = MammotionColors
     Column(Modifier.verticalScroll(rememberScrollState()),
@@ -125,6 +126,10 @@ internal fun MapSideBar(
         MapSideButton(Icons.Rounded.Layers, if (layers.layersOpen) tr("Hide the layers", "Masquer les calques") else tr("Show the signal layers", "Afficher les calques des signaux"), {
             layers.layersOpen = !layers.layersOpen; layers.showSignalHeat = layers.layersOpen
         }, enabled = layersEnabled, tint = if (layers.layersOpen && layers.showSignalHeat && layersShown) colors.Green else colors.TextPrimary)
+        // Headlamp (robot link only): a tap switches it; green once the robot reports it on. State unknown: a tap lights it.
+        MapSideButton(if (headlampOn == true) Icons.Rounded.FlashlightOn else Icons.Rounded.FlashlightOff,
+            if (headlampOn == true) tr("Turn the headlamp off", "Éteindre le phare") else tr("Turn the headlamp on", "Allumer le phare"),
+            { onHeadlamp(headlampOn != true) }, enabled = headlampEnabled, tint = if (headlampOn == true) colors.Green else colors.TextPrimary)
     }
 }
 

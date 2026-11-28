@@ -113,6 +113,8 @@ fun MapScreen(
     onSaveCorrections: (List<MapCorrection>) -> Boolean = { false },
     /** Opened from the first-launch assistant ("Explore without a robot"): the demo map is shown at once. */
     startDemo: Boolean = false,
+    /** Headlamp switch of the side bar (true = on), through the robot link. */
+    onHeadlamp: (Boolean) -> Unit = {},
 ) {
     // One parameter object for the body: see [MapScreenArgs] (Dalvik register limit).
     MapScreenContent(state, simulation, MapScreenArgs(
@@ -121,7 +123,7 @@ fun MapScreen(
         onBackOffBeforeResume, onStopBackOff, onDiscardMissionCheckpoint, onStopMammotionTask, cloudReturn,
         onCloudReturn, onCancelCloudReturn, cloudRobotName, onTrajectorySpeed, onStartPointNavigation,
         onStopPointNavigation, onDiscardPointResume, onUnlockRobot, onStop, onBack, onOpenManual, onOpenDrivenRecord,
-        onOpenTask, onOpenAllTasks, onSaveCorrections, startDemo))
+        onOpenTask, onOpenAllTasks, onSaveCorrections, startDemo, onHeadlamp))
 }
 
 /** Map screen body: a single parameter object ([MapScreenArgs]) keeps its Dalvik registers low (see [MapScreenArgs]). */
@@ -584,7 +586,8 @@ private fun MapScreenContent(state: RobotUi, simulation: SimulationSession, args
                 MapSideBar({ frame.camera }, { frame.camera = it }, follow, scope, sheets, layers, actions, pointMove, pointTarget,
                     stationEnabled = !mapView.demo && (cloudStation || (mapBase != null && !args.cloud)), followEnabled = !mapView.demo && marker != null,
                     moveEnabled = pointIdle && !state.navTest.running && map.complete, layersEnabled = !mapView.demo || signals.simulatedSurvey,
-                    layersShown = signals.displayedSignalSamples.isNotEmpty())
+                    layersShown = signals.displayedSignalSamples.isNotEmpty(),
+                    headlampOn = state.camera.headlampOn, headlampEnabled = !mapView.demo && !args.cloud && state.ready, onHeadlamp = args.onHeadlamp)
             }, panels = {
                 // Robot STOP button, collision, forbidden time range or beyond the mapped zones ([RobotProtectionPanel]).
                 val protection = RobotProtection(state, mapView.demo, args.cloud)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -226,7 +227,10 @@ private fun DevicePages(
             },
             onStop = robot::stop,
             startDemo = nav.demoMap,
+            onHeadlamp = { robot.headlamp(it) },
         )
+            // Headlamp state read when the map opens or the link comes up, for the side bar button.
+            LaunchedEffect(state.ready) { if (state.ready) robot.headlampRead() }
             // Border types editor, opened from the Map sheet (kept outside MapScreen, at its register limit).
             BorderTypeEditorHost(panels.robotMap)
             // Sync with the Mammotion app, opened from the Map sheet (same reason).

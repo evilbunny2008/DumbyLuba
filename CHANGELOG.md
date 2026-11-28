@@ -1713,3 +1713,8 @@ the Camera page to its own entry, Service → Robot → **Headlamp**, which stay
 is hidden there since the video needs the Mammotion account). The gateway battery "unknown" icon uses the auto-mirrored
 `Icons.AutoMirrored.Rounded.BatteryUnknown` instead of the deprecated `Icons.Rounded.BatteryUnknown` (same icon,
 mirrored in right-to-left languages).
+
+Version 1.20.2 (193): **Headlamp button on the map**. The headlamp switch moves from Service → Robot → Headlamp to the
+map's right side bar (under the layers button): a tap switches the light, the button turns green once the robot reports
+it on; the state is read when the map opens. It needs the robot link (Bluetooth or gateway), not the Mammotion account,
+so it also works in local mode. The Service entry and its page are removed.
